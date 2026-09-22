@@ -1,0 +1,11 @@
+# Dependencies
+node_modules
+
+# IDE
+.vscode
+
+# Playwright
+playwright/.auth
+
+# Outputs
+output/*.png
