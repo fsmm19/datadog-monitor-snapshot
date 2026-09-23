@@ -7,5 +7,14 @@ node_modules
 # Playwright
 playwright/.auth
 
-# Outputs
-output/*.png
+# Build
+dist
+
+# Azure Functions
+local.settings.json
+
+# Azurite (local storage emulator)
+__azurite_db_*.json
+__blobstorage__
+__queuestorage__
+__tablestorage__
