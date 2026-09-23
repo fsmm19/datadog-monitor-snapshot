@@ -1,4 +1,3 @@
-import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
 
@@ -11,13 +10,15 @@ export interface CaptureMonitorEventInput {
 
 export async function captureMonitorEvent({
   alertUrl,
-}: CaptureMonitorEventInput) {
-  const browser = await chromium.launch({
-    headless: false,
-  });
+}: CaptureMonitorEventInput): Promise<Buffer> {
+  const browser = await chromium.launch();
 
   const context = await browser.newContext({
     storageState: AUTH_FILE,
+    viewport: {
+      width: 1440,
+      height: 1600,
+    },
   });
 
   const page = await context.newPage();
@@ -25,57 +26,66 @@ export async function captureMonitorEvent({
   try {
     const url = new URL(alertUrl, DATADOG_URL);
 
-    await page.goto(url.toString(), { waitUntil: "domcontentloaded" });
+    await page.goto(url.toString(), {
+      waitUntil: "domcontentloaded",
+    });
 
-    const eventTimeline = page.locator(
-      ".monitors-status-page_status__event-list",
+    const timeline = page.locator(".monitors-status-page_status__event-list");
+
+    const details = page.getByRole("main");
+
+    const detailsContent = page.locator(
+      ".monitors-status-page_status__event-details-main-content",
     );
-    const eventDetails = page.getByText("Event DetailsMessage");
 
-    await eventTimeline.waitFor({ state: "visible" });
-    await eventDetails.waitFor({ state: "visible" });
+    await Promise.all([
+      timeline.waitFor({ state: "visible" }),
+      details.waitFor({ state: "visible" }),
+      detailsContent.waitFor({ state: "visible" }),
+    ]);
 
-    const eventTimelineBox = await eventTimeline.boundingBox();
-    const eventDetailsBox = await eventDetails.boundingBox();
+    await details.scrollIntoViewIfNeeded();
 
-    if (!eventTimelineBox || !eventDetailsBox) {
-      throw new Error("Unable to determine screenshot bounds");
+    const [timelineBox, detailsBox, detailsContentBox] = await Promise.all([
+      timeline.boundingBox(),
+      details.boundingBox(),
+      detailsContent.boundingBox(),
+    ]);
+
+    if (!timelineBox || !detailsBox || !detailsContentBox) {
+      throw new Error("Could not determine screenshot bounds");
     }
 
-    const x = Math.min(eventTimelineBox.x, eventDetailsBox.x);
-    const y = Math.min(eventTimelineBox.y, eventDetailsBox.y);
+    const x = timelineBox.x;
+    const y = Math.min(timelineBox.y, detailsBox.y);
 
-    const right = Math.max(
-      eventTimelineBox.y + eventTimelineBox.height,
-      eventDetailsBox.y + eventDetailsBox.height,
-    );
+    const right = detailsBox.x + detailsBox.width;
+    const bottom = detailsContentBox.y + detailsContentBox.height;
 
-    const bottom = Math.max(
-      eventTimelineBox.y + eventTimelineBox.height,
-      eventDetailsBox.y + eventDetailsBox.height,
-    );
+    const width = right - x;
+    const height = bottom - y;
 
-    // const screenshot = await page.screenshot({
-    //   type: "png",
-    //   clip: {
-    //     x,
-    //     y,
-    //     width: right - x,
-    //     height: bottom - y,
-    //   },
-    // });
+    if (width <= 0 || height <= 0) {
+      throw new Error("Invalid screenshot bounds");
+    }
 
-    await page
-      .locator(".monitors-status-page_status__events-section")
-      .screenshot({
-        path: "output/capture.png",
-      });
-
-    // await writeFile("output/capture.png", screenshot);
-
-    console.log({
-      eventTimelineBox,
-      eventDetailsBox,
+    return await page.screenshot({
+      type: "png",
+      animations: "disabled",
+      caret: "hide",
+      clip: {
+        x,
+        y,
+        width,
+        height,
+      },
+      style: `
+        header,
+        nav,
+        .single-page-app_navbar_top-bar {
+          visibility: hidden !important;
+        }
+      `,
     });
   } finally {
     await context.close();

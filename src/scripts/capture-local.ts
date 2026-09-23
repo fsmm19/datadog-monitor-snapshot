@@ -2,5 +2,5 @@ import { captureMonitorEvent } from "../capture/capture-monitor-event.js";
 
 await captureMonitorEvent({
   alertUrl:
-    "/monitors/311657392?group=pod_name%3Awk-lido4d-amadeusmail-c9dd9b76-tnhmw&from_ts=1789687012000&to_ts=1789688212000&event_id=8815170504854953059&link_source=monitor_notif&link_monitor_id=311657392&link_event_id=8815170504854953059&link_event_ts=1789687912",
+    "/monitors/178744683?group=kube_namespace%3Assf-pci-pay-orchestration%2Cpod_name%3Aws-pop-pay-7ddd8dd784-h94hd&from_ts=1790128443000&to_ts=1790129643000&event_id=8822576501971293416&link_source=monitor_notif&link_monitor_id=178744683&link_event_id=8822576501971293416&link_event_ts=1790129343",
 });

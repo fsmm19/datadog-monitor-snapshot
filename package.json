@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "auth": "tsx src/auth/create-auth-state.ts",
-    "test:auth": "tsx src/scripts/test-auth.ts",
-    "build": "tsc"
+    "capture": "tsx src/scripts/capture-local.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts"
   },
   "keywords": [],
   "author": "",
