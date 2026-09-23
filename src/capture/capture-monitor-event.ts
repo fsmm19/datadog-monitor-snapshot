@@ -101,7 +101,6 @@ export async function captureMonitorEvent({
       type: "png",
       animations: "disabled",
       caret: "hide",
-      path: "output/capture.png",
       clip: {
         x,
         y,
