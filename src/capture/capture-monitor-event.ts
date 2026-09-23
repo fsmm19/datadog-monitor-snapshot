@@ -3,6 +3,7 @@ import { chromium } from "playwright";
 
 const DATADOG_URL = process.env.DATADOG_URL ?? "https://app.datadoghq.com";
 const AUTH_FILE = resolve("playwright/.auth/datadog.json");
+const TIMEZONE_ID = "America/Bogota";
 
 export interface CaptureMonitorEventInput {
   alertUrl: string;
@@ -15,6 +16,7 @@ export async function captureMonitorEvent({
 
   const context = await browser.newContext({
     storageState: AUTH_FILE,
+    timezoneId: TIMEZONE_ID,
     viewport: {
       width: 1440,
       height: 1600,
@@ -73,6 +75,7 @@ export async function captureMonitorEvent({
       type: "png",
       animations: "disabled",
       caret: "hide",
+      path: "output/capture.png",
       clip: {
         x,
         y,
