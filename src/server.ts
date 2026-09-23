@@ -1,5 +1,9 @@
 import { createServer } from "node:http";
-import { captureMonitorEvent } from "./capture/capture-monitor-event.js";
+
+import {
+  captureMonitorEvent,
+  InvalidAlertUrlError,
+} from "./capture/capture-monitor-event.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
 
@@ -35,7 +39,7 @@ const server = createServer(async (request, response) => {
 
       response.end(
         JSON.stringify({
-          error: "INVALID_ALERT_URL",
+          error: "INVALID_REQUEST",
           message: "alertUrl is required.",
         }),
       );
@@ -55,6 +59,36 @@ const server = createServer(async (request, response) => {
 
     response.end(screenshot);
   } catch (error) {
+    if (error instanceof InvalidAlertUrlError) {
+      response.writeHead(400, {
+        "Content-Type": "application/json",
+      });
+
+      response.end(
+        JSON.stringify({
+          error: "INVALID_ALERT_URL",
+          message: error.message,
+        }),
+      );
+
+      return;
+    }
+
+    if (error instanceof SyntaxError) {
+      response.writeHead(400, {
+        "Content-Type": "application/json",
+      });
+
+      response.end(
+        JSON.stringify({
+          error: "INVALID_JSON",
+          message: "Request body must contain valid JSON.",
+        }),
+      );
+
+      return;
+    }
+
     console.error(error);
 
     response.writeHead(500, {

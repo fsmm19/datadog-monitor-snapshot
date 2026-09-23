@@ -9,9 +9,35 @@ export interface CaptureMonitorEventInput {
   alertUrl: string;
 }
 
+export class InvalidAlertUrlError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidAlertUrlError";
+  }
+}
+
+function getMonitorUrl(alertUrl: string): URL {
+  const baseUrl = new URL(DATADOG_URL);
+  const url = new URL(alertUrl, baseUrl);
+
+  if (url.origin !== baseUrl.origin) {
+    throw new InvalidAlertUrlError(
+      "alertUrl must belong to the configured Datadog instance",
+    );
+  }
+
+  if (!/^\/monitors\/\d+/.test(url.pathname)) {
+    throw new InvalidAlertUrlError("alertUrl must point to a Datadog monitor");
+  }
+
+  return url;
+}
+
 export async function captureMonitorEvent({
   alertUrl,
 }: CaptureMonitorEventInput): Promise<Buffer> {
+  const url = getMonitorUrl(alertUrl);
+
   const browser = await chromium.launch();
 
   const context = await browser.newContext({
