@@ -2,13 +2,12 @@
 node_modules
 
 # IDE
-.vscode
-
-# Playwright
-playwright/.auth
 
 # Build
 dist
+
+# Local renders
+output
 
 # Azure Functions
 local.settings.json
