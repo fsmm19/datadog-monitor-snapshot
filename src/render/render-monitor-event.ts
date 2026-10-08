@@ -188,7 +188,6 @@ async function renderGroup(group: string) {
     return full;
   }
 
-  // Longest prefix that still fits with the ellipsis.
   let low = 0;
   let high = group.length;
   let best = await renderText("...", STYLES.group);
@@ -315,8 +314,6 @@ async function renderBlock(
   return y;
 }
 
-// Accepts both the monitor state (`dest_state`: Alert, Warn, OK, No Data)
-// and the event severity (`status`/`alert_type`: error, warning, success).
 function normalizeStatus(
   value: string,
 ): MonitorEventStatus {

@@ -53,7 +53,6 @@ export async function renderText(
   };
 }
 
-// Positions a block by the top-left corner of its first line box.
 export function place(
   block: TextBlock,
   left: number,

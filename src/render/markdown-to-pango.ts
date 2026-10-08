@@ -7,7 +7,6 @@ export type MarkdownBlock =
 
 const LINK_COLOR = "#1a6dd1";
 
-// Unresolved @handles (workflows, webhooks...) are shown in a smaller font.
 const HANDLE_SIZE = 19.5;
 
 export function parseMarkdown(markdown: string): MarkdownBlock[] {

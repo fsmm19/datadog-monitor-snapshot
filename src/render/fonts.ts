@@ -16,8 +16,6 @@ const FONT_FILES = [
 
 let registration: Promise<void> | undefined;
 
-// vips adds a fontfile to fontconfig the first time it is used, after which
-// the family (and emoji fallback) is available to every text render.
 export function registerFonts(): Promise<void> {
   registration ??= (async () => {
     for (const file of FONT_FILES) {
