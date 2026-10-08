@@ -98,6 +98,11 @@ function formatInline(value: string): string {
   );
 
   text = text.replace(
+    /(^|\s)(?:&lt;)?(https?:\/\/(?:[^\s<&]|&amp;)*[^\s<&.,;:!?)])(?:&gt;)?/g,
+    `$1<span foreground="${LINK_COLOR}">$2</span>`,
+  );
+
+  text = text.replace(
     /(^|\s)(@[\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g,
     `$1<span foreground="${LINK_COLOR}">$2</span>`,
   );

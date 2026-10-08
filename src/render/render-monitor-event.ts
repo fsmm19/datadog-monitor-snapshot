@@ -48,7 +48,7 @@ const COLORS = {
 const STYLES = {
   timelineTitle: { size: 19.5, weight: 600, lineHeight: 26, color: COLORS.text },
   timestamp: { size: 18, lineHeight: 24, color: COLORS.muted },
-  badge: { size: 16, weight: 600, lineHeight: 22, color: "#ffffff" },
+  badge: { size: 15.5, weight: 700, lineHeight: 22, color: "#ffffff" },
   group: { size: 17, lineHeight: 24, color: COLORS.text },
   detailsTitle: { size: 23, weight: 600, lineHeight: 30, color: COLORS.text },
   label: { size: 19.5, lineHeight: 26, color: COLORS.muted },
@@ -315,6 +315,8 @@ async function renderBlock(
   return y;
 }
 
+// Accepts both the monitor state (`dest_state`: Alert, Warn, OK, No Data)
+// and the event severity (`status`/`alert_type`: error, warning, success).
 function normalizeStatus(
   value: string,
 ): MonitorEventStatus {
@@ -322,10 +324,13 @@ function normalizeStatus(
     value
       .trim()
       .toUpperCase()
-      .replace(/ /g, "_")
+      .replace(/[\s-]+/g, "_")
   ) {
     case "ALERT":
     case "ERROR":
+    case "FAILURE":
+    case "CRITICAL":
+    case "TRIGGERED":
       return "ALERT";
 
     case "WARN":
@@ -333,10 +338,12 @@ function normalizeStatus(
       return "WARN";
 
     case "OK":
+    case "SUCCESS":
     case "RECOVERED":
       return "OK";
 
     case "NO_DATA":
+    case "NODATA":
       return "NO_DATA";
 
     default:

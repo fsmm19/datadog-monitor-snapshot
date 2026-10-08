@@ -1,6 +1,6 @@
 # datadog-monitor-snapshot
 
-Azure Function que genera una imagen PNG del evento de un monitor de Datadog (timeline + detalles del evento) a partir de los datos de la API de eventos, reproduciendo la vista de Datadog con [sharp](https://sharp.pixelplumbing.com/).
+Azure Function que genera una imagen PNG del evento de un monitor de Datadog (timeline + detalles del evento) a partir de datos obtenidos de la API de eventos de Datadog, reproduciendo la vista de Datadog con [sharp](https://sharp.pixelplumbing.com/).
 
 ## Requisitos
 
@@ -26,7 +26,7 @@ Recibe los datos del evento y devuelve la imagen. El `message` es el texto del e
 | Campo       | Tipo               | Descripción                                                        |
 | ----------- | ------------------ | ------------------------------------------------------------------ |
 | `timestamp` | `string \| number` | Fecha ISO o epoch en milisegundos.                                 |
-| `status`    | `string`           | `Alert`, `Warn`, `OK`, `No Data`… (otros valores se muestran como `UNKNOWN`). |
+| `status`    | `string`           | Estado del monitor. Se recomienda `monitor-alert-event.dest_state` (`Alert`, `Warn`, `OK`, `No Data`); también acepta la severidad de `status`/`alert_type` (`error`, `warning`, `success`). Otros valores se muestran como `UNKNOWN`. |
 | `group`     | `string \| null`   | Opcional. Grupo del monitor, por ejemplo `pod_name:...`.           |
 | `title`     | `string`           | Título del evento.                                                 |
 | `message`   | `string`           | Mensaje del evento en markdown.                                    |
